@@ -1,0 +1,6 @@
+map_max_mis=0.05
+chr=MT
+loose=0.003,0.003
+chi=0.0
+d=1000
+mle=0
