@@ -5,9 +5,10 @@ import distutils.util
 import re
 
 def main():
-    usage = "usage: %prog [options] \nheteroplasmy calling rewrite by python\n\
+    usage = "usage: %prog [options] \n\
+            NUMTs filter\n\
             Author: Ruoyu Zhang \n\
-            last update Oct 18 2017"
+            last update Oct 19 2017"
     
     parser = argparse.ArgumentParser(description = usage)
     

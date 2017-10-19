@@ -167,8 +167,9 @@ class Heteroplasmy(WorkflowRunner):
             
 if __name__ == "__main__":
     usage = "usage: %prog [opstatistics of rawtions] \n\
-            heteroplasmy pyflow\n\
-            Oct 18 2017 \n\
+            heteroplasmy pyflow pipeline\n\
+            Author: Ruoyu Zhang \n\
+            Last update Oct 19 2017 \n\
             "
 
     #parser = OptionParser(usage=usage)
@@ -187,7 +188,7 @@ if __name__ == "__main__":
             
     opts = parser.parse_args()
     
-    print opts
+    #print opts
         
     heteroplasmy_wf = Heteroplasmy(
         opts.sample,
