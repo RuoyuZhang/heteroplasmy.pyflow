@@ -107,8 +107,8 @@ class Heteroplasmy(WorkflowRunner):
                              %(sys.executable, self.config['het_filter'], self.het_config['loose'], self.het_config['chi'], self.het_config['d'], self.het_config['mle'], self.prefix, self.prefix)
   
         # rm
-        self.rm_command = 'rm %s.trimmed.R1.fastq %s.trimmed.R1.un.fastq %s.trimmed.R2.fastq %s.trimmed.R2.un.fastq %s.bwa.sam %s.bwa.filter.sam %s.bwa.bam %s.bwa.sort.bam %s.sort.gp.bam %s.sort.gp.rmdup.bam %s.sort.gp.rmdup.bai '\
-                          %(self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,)
+        self.rm_command = 'rm %s.trimmed.R1.fastq %s.trimmed.R1.un.fastq %s.trimmed.R2.fastq %s.trimmed.R2.un.fastq %s.bwa.sam %s.bwa.filter.sam %s.bwa.bam %s.bwa.sort.bam %s.sort.gp.bam %s.sort.gp.rmdup.bam %s.sort.gp.rmdup.bai %s.mp'\
+                          %(self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix)
                   
     def workflow(self):
 
