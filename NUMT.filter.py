@@ -21,8 +21,7 @@ def main():
     #begin:
     sam=open(opts.sam,"a+")
     out=open(opts.out,"w")
-    of2=open(opts.out,"w")
-    
+        
     [last, read1, read2, isread2, discard] = ['','','','no','no']
     
     for i, line in enumerate(sam):
@@ -45,7 +44,7 @@ def main():
                 continue
         
         # discard non mitochondrial reads
-        if c == "*" or c != opts.chr:
+        if c == "*" or c != opts.chr or pair != "=":
             discard = 'yes'
             
         # discard reads with mismatch > cutoff
@@ -56,7 +55,7 @@ def main():
         else:
             discard = 'yes'
                     
-        if discard != 'yes' and isread2 == 'yes':
+        if discard == 'no' and isread2 == 'yes':
             out.write(read1 + read2 )
 
 

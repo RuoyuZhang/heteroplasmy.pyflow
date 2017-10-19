@@ -113,20 +113,20 @@ class Heteroplasmy(WorkflowRunner):
     def workflow(self):
 
         trim_task = None
-        if 'all' in self.stages or 'trim' in self.stages:
+        if 'all_rm' in self.stages or 'all' in self.stages or 'trim' in self.stages:
             trim_task = self.addTask('trim', self.trim_command, isForceLocal = True, nCores=1)
         
         bwa_task = None    
-        if 'all' in self.stages or 'bwa' in self.stages:
+        if 'all_rm' in self.stages or 'all' in self.stages or 'bwa' in self.stages:
             bwa_task = self.addTask('bwa', self.bwa_command, dependencies=trim_task)
             
         numt_task = None
-        if 'all' in self.stages or 'NUMT' in self.stages:
+        if 'all_rm' in self.stages or 'all' in self.stages or 'NUMT' in self.stages:
             numt_task = self.addTask('numt_filter', self.numt_command, dependencies=bwa_task)
         
         sam_dedup_task = {'sam_convert':None, 'sam_sort':None, 'sam_add_RG':None, 'sam_dedup':None, 'sam_index':None, 'align_stat':None, 'insert_stat':None, 'depth_stat':None}
-        if 'all' in self.stages or 'sam_dedup' in self.stages:
-            sam_dedup_task['sam_convert'] = self.addTask('sam_convert', self.sam_dedup_cm1, dependencies=bwa_task)
+        if 'all_rm' in self.stages or 'all' in self.stages or 'sam_dedup' in self.stages:
+            sam_dedup_task['sam_convert'] = self.addTask('sam_convert', self.sam_dedup_cm1, dependencies=numt_task)
             sam_dedup_task['sam_sort'] = self.addTask('sam_sort', self.sam_dedup_cm2, dependencies=sam_dedup_task['sam_convert'])
             sam_dedup_task['sam_add_RG'] = self.addTask('sam_add_RG', self.sam_dedup_cm3, dependencies=sam_dedup_task['sam_sort'])
             sam_dedup_task['sam_dedup'] = self.addTask('sam_dedup', self.sam_dedup_cm4, dependencies=sam_dedup_task['sam_add_RG'])
@@ -136,12 +136,12 @@ class Heteroplasmy(WorkflowRunner):
             sam_dedup_task['depth_stat'] = self.addTask('depth_stat', self.sam_dedup_cm8, dependencies=sam_dedup_task['sam_dedup'])
         
         realign_task = {'indel_list':None,'realign':None}
-        if 'all' in self.stages or 'realign' in self.stages:
+        if 'all_rm' in self.stages or 'all' in self.stages or 'realign' in self.stages:
             realign_task['indel_list'] = self.addTask('indel_list', self.realign_cm1, dependencies=sam_dedup_task['sam_index'])
             realign_task['realign'] = self.addTask('realign', self.realign_cm2, dependencies=realign_task['indel_list'])
                 
         vcf_task = {'vcf_vcf':None,'vcf_take_snp':None,'vcf_take_indel':None,'vcf_filter_snp':None,'vcf_filter_indel':None}
-        if 'all' in self.stages or 'vcf' in self.stages:
+        if 'all_rm' in self.stages or 'all' in self.stages or 'vcf' in self.stages:
             vcf_task['vcf_vcf'] = self.addTask('vcf_vcf', self.vcf_cm1, dependencies=realign_task['realign'])
             vcf_task['vcf_take_snp'] = self.addTask('vcf_take_snp', self.vcf_cm2, dependencies=vcf_task['vcf_vcf'])
             vcf_task['vcf_take_indel'] = self.addTask('vcf_take_indel', self.vcf_cm3, dependencies=vcf_task['vcf_vcf'])
@@ -149,11 +149,11 @@ class Heteroplasmy(WorkflowRunner):
             vcf_task['vcf_filter_indel'] = self.addTask('vcf_filter_indel', self.vcf_cm5, dependencies=vcf_task['vcf_take_indel'])
         
         mp_task = None
-        if 'all' in self.stages or 'mpileup' in self.stages:
+        if 'all_rm' in self.stages or 'all' in self.stages or 'mpileup' in self.stages:
             mp_task = self.addTask('mpileup', self.mp_command, dependencies=realign_task['realign'])
             
         het_task = {'het_raw':None, 'het_filter':None}
-        if 'all' in self.stages or 'het' in self.stages:
+        if 'all_rm' in self.stages or 'all' in self.stages or 'het' in self.stages:
             het_task['het_raw'] = self.addTask('het_raw', self.het_raw_cm, dependencies=mp_task)
             het_task['het_filter'] = self.addTask('het_filter', self.het_filter_cm, dependencies=het_task['het_raw'])
             
