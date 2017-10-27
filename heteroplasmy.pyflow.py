@@ -54,10 +54,10 @@ class Heteroplasmy(WorkflowRunner):
                                 %(self.config['trim'], self.fastq[0], self.prefix, self.prefix)
         # bwa
         if len(self.fastq) == 2:
-            self.bwa_command = '%s mem -t 3 %s %s.trimmed.R1.fastq %s.trimmed.R2.fastq > %s.bwa.sam 2>%s.bwa.log' \
+            self.bwa_command = '%s mem -t 2 %s %s.trimmed.R1.fastq %s.trimmed.R2.fastq > %s.bwa.sam 2>%s.bwa.log' \
                                % (self.config['bwa'], self.ref, self.prefix, self.prefix, self.prefix, self.prefix)
         else:
-            self.bwa_command = '%s mem -t 3 %s %s.trimmed.fastq > %s.bwa.sam 2>%s.bwa.log' \
+            self.bwa_command = '%s mem -t 2 %s %s.trimmed.fastq > %s.bwa.sam 2>%s.bwa.log' \
                                % (self.config['bwa'], self.ref, self.prefix, self.prefix, self.prefix)
             
         # NUMTs filter
@@ -105,7 +105,10 @@ class Heteroplasmy(WorkflowRunner):
         self.het_raw_cm = '%s %s -i %s.mp -o %s.raw' %(sys.executable, self.config['het_raw'], self.prefix, self.prefix)
         self.het_filter_cm = '%s %s --loose %s --chi %s -d %s --mle %s -i %s.raw -o %s' \
                              %(sys.executable, self.config['het_filter'], self.het_config['loose'], self.het_config['chi'], self.het_config['d'], self.het_config['mle'], self.prefix, self.prefix)
-  
+        
+        # haplogroup
+        self.haplogrep_cm = '%s --in %s.filtered_snps_final.vcf --out %s.hsd' %(self.config['haplogrep'], self.prefix, self.prefix)
+        
         # rm
         self.rm_command = 'rm %s.trimmed.R1.fastq %s.trimmed.R1.un.fastq %s.trimmed.R2.fastq %s.trimmed.R2.un.fastq %s.bwa.sam %s.bwa.filter.sam %s.bwa.bam %s.bwa.sort.bam %s.sort.gp.bam %s.sort.gp.rmdup.bam %s.sort.gp.rmdup.bai %s.mp'\
                           %(self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix,self.prefix)
@@ -156,6 +159,10 @@ class Heteroplasmy(WorkflowRunner):
         if 'all_rm' in self.stages or 'all' in self.stages or 'het' in self.stages:
             het_task['het_raw'] = self.addTask('het_raw', self.het_raw_cm, dependencies=mp_task)
             het_task['het_filter'] = self.addTask('het_filter', self.het_filter_cm, dependencies=het_task['het_raw'])
+        
+        haplogrep_task = None
+        if 'all_rm' in self.stages or 'all' in self.stages or 'haplogrep' in self.stages:
+            haplogrep_task = self.addTask('haplogrep', self.haplogrep_cm, dependencies=vcf_task['vcf_filter_snp'])
             
         rm_task = None
         if 'all_rm' in self.stages or 'rm' in self.stages:
@@ -185,7 +192,8 @@ if __name__ == "__main__":
     parser.add_argument('--stages', type=str, required=True, nargs="+", help="stages to run")
     parser.add_argument('--isContinue', type=distutils.util.strtobool, default='False')
     parser.add_argument('--isDryRun', type=distutils.util.strtobool, default='False')
-            
+    #parser.add_argument('--max_job_cores', type=int, default=2)
+    
     opts = parser.parse_args()
     
     #print opts
